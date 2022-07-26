@@ -18,11 +18,11 @@ def parse_args(args):
     parser.add_argument('--test', action='store_true',
         help='Test using the example inputs.')
         
-    parser.add_argument('--threads' default=4, 
-        help='Allows the script to operate more efficiently)
+    parser.add_argument('--threads', default=4, 
+        help='Number of threads used by fastp filtering step.')
         
-    parser.add_argument('--trim_front_tail' default=10,
-        help='Number of NTs to remove from the start/end of read')
+    parser.add_argument('--trim_front_tail', default=10,
+        help='Number of NTs to remove from the start/end of read.')
 
     parser.add_argument('--outputs', '-o', default='mappgene_outputs/',
         help='Path to output directory.')
@@ -84,7 +84,7 @@ def main():
         'read_cutoff_bp': args.read_cutoff_bp,
         'primers_bp': args.primers_bp,
         'depth_cap': float(args.depth_cap),
-        'threads':int(args.threads),
+        'threads': int(args.threads),
         'trim_front_tail': int(args.trim_front_tail),
         'stdout': abspath(join(args.outputs, 'mappgene.stdout')),
     }
