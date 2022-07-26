@@ -7,23 +7,23 @@ from mappgene.subscripts import *
 @python_app(executors=['worker'])
 def run_ivar(params):
     
-    subject_dir = params['work_dir'] #Varible_name = params['parameter name']...the directory where the sample is in
-    subject = basename(subject_dir) #basename fetches the tail end of the path...the sample file
+    subject_dir = params['work_dir'] 
+    subject = basename(subject_dir) 
     input_reads = params['input_reads']
     variant_frequency = params['variant_frequency']
     read_cutoff_bp = params['read_cutoff_bp']
-    thread_usage = params['threads'] # new
-    trim_front_tail = params['trim_f_t] #new
+    thread_usage = params['threads'] 
+    trim_front_tail = params['trim_f_t'] 
     primers_bp = params['primers_bp']
     depth_cap = params['depth_cap']
     stdout = params['stdout']
-    ivar_dir = join(subject_dir, 'ivar') #calls a new directory to the sample directory path
+    ivar_dir = join(subject_dir, 'ivar')
     output_dir = join(subject_dir, 'ivar_outputs')
-    alignments_dir = join(output_dir, 'alignments') #creates a new dir in ivar_outputs 
+    alignments_dir = join(output_dir, 'alignments') 
     raw_dir = join(ivar_dir, 'raw_data')
-    smart_remove(raw_dir) #removes all files and directories
+    smart_remove(raw_dir) 
     smart_remove(output_dir)
-    smart_mkdir(raw_dir) #makes dir
+    smart_mkdir(raw_dir) 
     smart_mkdir(output_dir)
     smart_mkdir(alignments_dir)
     reads = []
@@ -45,13 +45,10 @@ Arguments:
     # Run fixq.sh
     for input_read in input_reads:
         tmp_f = join(raw_dir, 'tmp_' + basename(input_read))#makes a temp read file for the sample
-        f = join(raw_dir, basename(input_read))# adds the input read (sample file) to the raw_dir path
-        smart_copy(input_read, f) # copy file or directory, while ignoring non-existent or equicalent files... searches input_reads for the sample file and copies it to raw_dir if it doesn't exist there 
+        f = join(raw_dir, basename(input_read))
+        smart_copy(input_read, f) 
         run(f'zcat {f} | awk \'NR%4 == 0 {{ gsub(\\"F\\", \\"?\\"); gsub(\\":\\", \\"5\\") }}1\'' +
             f' | gzip -c > {tmp_f}', params)
-            #run() uses zcat to expand and view f (compressed file) without uncompressing it. Awk searches each line of f for regex pattern and keeps a current count of the number of input record (takes # of input records and divide by four).
-            #gsub search target regex pattern for all of the longest, leftmost, nonoverlapping matching substrings it can find and replace them with replacement. The ‘g’ in gsub() stands for “global,” which means replace everywhere. 
-            #gzip will compress the file while leaving the orginal file intact.It redirects the output to tmp_f.
             
         if exists(tmp_f): #tmp_f should have the modified version of f
             smart_remove(f) #removes f path
@@ -76,8 +73,8 @@ Arguments:
 
     
     align_prefix = join(alignments_dir, subject)
-    r1_fastp = join(output_dir, '_R1_fastp_temp.fastq')#new
-    r2_fastp = join(output_dir, '_R2_fastp_temp.fastq')#new
+    r1_fastp = join(output_dir, '_R1_fastp_temp.fastq')
+    r2_fastp = join(output_dir, '_R2_fastp_temp.fastq')
     bam = replace_extension(align_prefix, '.bam')
     trimmed = replace_extension(align_prefix, '.trimmed')
     trimmed_sorted = replace_extension(align_prefix, '.trimmed.sorted.bam')
@@ -95,7 +92,7 @@ Arguments:
     output_tsv = join(output_dir, f'{subject}.ivar.tsv')
     output_fa = join(output_dir, f'{subject}.ivar.consensus')
     run(f'bwa index {fasta}', params)
-    run(f'fastp -i {read1} -I {read2} -o {r1_fastp} -O {r2_fastp} -D --trim_front1 {trim_front_tail} --trim_tail1 {trim_front_tail} -l 25 -w {thread_usage} -h {Subject_dir}'.fastp.html' 2>dev/null}', params) #new
+    run(f'fastp -i {read1} -I {read2} -o {r1_fastp} -O {r2_fastp} -D --trim_front1 {trim_front_tail} --trim_tail1 {trim_front_tail} -l 25 -w {thread_usage} -h {Subject_dir}'.fastp.html' 2>dev/null}', params) 
     run(f'bwa mem -t 8 {fasta} {read1} {read2} | samtools sort -o {bam}', params)
     run(f'ivar trim -m {read_cutoff_bp} -b {ivar_dir}/primers_{primers_bp}bp/nCoV-2019.scheme.bed -p {trimmed} -i {bam} -e', params)
     run(f'samtools sort {trimmed}.bam -o {trimmed_sorted}', params)
