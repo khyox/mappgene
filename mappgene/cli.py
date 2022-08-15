@@ -18,8 +18,8 @@ def parse_args(args):
     parser.add_argument('--test', action='store_true',
         help='Test using the example inputs.')
     
-    Parser.add_augment('--dedup', '-D', actions='store_true',
-        help= 'enable deduplication to drop the duplicated reads/pairs.')
+    parser.add_augment('--dedup', '-D', actions='store_true',
+        help= 'Enable deduplication to drop the duplicated reads/pairs.')
     
     parser.add_argument('--threads', default=4, 
         help='Number of threads used by fastp filtering step.')
